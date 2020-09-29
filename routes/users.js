@@ -7,10 +7,10 @@ const jwt = require("jsonwebtoken");
 const { getUserToken, requireAuth } = require("../auth");
 //Imports database models
 const db = require("../db/models");
-const { User, ListUser } = db;
+const { User, ListUser, Pressure, Sugar } = db;
 const { asyncHandler, handleValidationErrors } = require("../utils");
 
-const userNotFoundError = id => {
+const userNotFoundError = (id) => {
     const err = Error(`User with id of ${id} could not be found.`);
     err.title = "User not found.";
     err.status = 404;
@@ -36,17 +36,15 @@ const validateEmailAndPassword = [
 
 //get all users
 router.get('/', (req, res) => {
-  db.users.findAll({
+  db.User.findAll({
     include: [{
-      model: Pressure,
-      as: 'pressures',
+      model: db.Pressure
     }, {
-      model: Sugar,
-      as: 'sugars',
+      model: db.Sugar
     }],
   })
   .then(data => {
-    res.send(data);
+    res.status(200).send(data);
   })
   .catch(err => {
     res.status(500).send({
